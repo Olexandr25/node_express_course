@@ -1,21 +1,14 @@
 const express = require('express')
 const app = express()
-const { people } = require('./data')
+const auth = require('./routes/auth')
+const people = require('./routes/people')
 
 app.use(express.static('./methods-public'))
 app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: people })
-})
-
-app.post('/login', (req, res) => {
-  const { name } = req.body
-  if (name) {
-    return res.status(200).send(`Welcome ${name}`)
-  }
-  res.status(401).send('Please provide credentials')
-})
+app.use('/login', auth)
+app.use('/api/people', people)
 
 app.all('*', (req, res) => {
   res.status(404).send('<h1>resource not found</h1>')
